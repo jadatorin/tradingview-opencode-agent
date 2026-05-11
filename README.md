@@ -10,7 +10,7 @@
 | Característica | Descripción |
 |----------------|-------------|
 | 📊 **Análisis de Chart** | Lee indicadores, niveles, tablas de Pine, y estado del gráfico |
-| 📈 **Indicadores** | RSI, MACD, Bollinger Bands, VWAP, EMA, SMA, Stochastic, y más |
+| 📈 **Indicadores** | SMC, ICT, RSI, MACD, Bollinger Bands, VWAP, EMA, SMA, Stochastic, y más... |
 | 🎯 **Niveles SMC** | Detecta CHoCH, BOS, SFP, Fair Price Zones, zonas de liquidez |
 | ⏪ **Replay Mode** | Practica trading en datos históricos con control de barras |
 | 📋 **Reports** | Genera reportes de estrategia con métricas de rendimiento |

@@ -1,0 +1,19 @@
+name: Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-local:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Check JavaScript syntax
+        run: node --check src/**/*.js
+      - name: List files
+        run: ls -la

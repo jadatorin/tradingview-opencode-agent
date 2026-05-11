@@ -1,0 +1,73 @@
+name: Feature Request ✨
+description: Solicitar una nueva feature
+title: "[FEATURE] "
+labels: ["enhancement", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ✨ Feature Request
+
+        Describe la feature que te gustaría.
+
+  - type: markdown
+    attributes:
+      value: |
+        ## 🎯 Problema o necesidad
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: ¿Qué problema resuelve?
+      placeholder: |
+        Como usuario, quiero... para...
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## 💡 Solución propuesta
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe tu solución
+      placeholder: |
+        La feature debería hacer X cuando Y...
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## 🔄 Alternativas consideradas
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: ¿Qué otras opciones consideraste?
+      placeholder: |
+        Opción 1: ...
+        Opción 2: ...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Busqué si ya existe esta feature
+          required: true
+        - label: Entiendo que necesito status:approved antes de hacer PR
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área del proyecto
+      options:
+        - MCP Server
+        - opencode-skills
+        - Launchers
+        - Documentación
+        - Otro

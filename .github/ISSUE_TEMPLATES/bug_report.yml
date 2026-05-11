@@ -1,0 +1,89 @@
+name: Bug Report 🐛
+description: Reportar un bug en el proyecto
+title: "[BUG] "
+labels: ["bug", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐛 Bug Report
+
+        Por favor describe el bug de forma clara y concisa.
+
+  - type: markdown
+    attributes:
+      value: |
+        ## 🔍 Información del ambiente
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Sistema Operativo
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - WSL
+    validations:
+      required: true
+
+  - type: dropdown
+    id: node-version
+    attributes:
+      label: Node.js Version
+      options:
+        - 18.x
+        - 20.x
+        - 22.x
+        - Otro
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## 📝 Pasos para reproducir
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos
+      placeholder: |
+        1. Ir a '...'
+        2. Ejecutar '...'
+        3. Ver error '...'
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamiento esperado
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamiento actual
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs o errores
+      placeholder: |
+        ```
+        (pegar logs aquí)
+        ```
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Busqué issues similares primero
+          required: true
+        - label: Entiendo que necesito status:approved antes de hacer PR
+          required: true

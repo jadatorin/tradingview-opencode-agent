@@ -1,0 +1,37 @@
+name: Question ❓
+description: Hacer una pregunta sobre el proyecto
+title: "[QUESTION] "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ❓ Pregunta
+
+        Antes de preguntar, revisa:
+        - [Documentación](docs/README_ES.md)
+        - [Troubleshooting](docs/TROUBLESHOOTING.md)
+        - [Issues abiertos](https://github.com/jadatorin/tradingview-opencode-agent/issues)
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Tu pregunta
+      placeholder: |
+        Tengo una pregunta sobre...
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## 📋 Contexto adicional
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto
+      placeholder: |
+        - OS: Windows 11
+        - Node: v20.x
+        - TradingView: Desktop v3.1

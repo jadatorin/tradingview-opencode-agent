@@ -1,0 +1,21 @@
+{
+  "name": "tradingview-opencode-agent",
+  "version": "1.0.0",
+  "description": "TradingView Desktop AI Agent for opencode.ai. MCP server + skills + launchers.",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node src/cli/index.js status",
+    "lint": "node --check src/**/*.js"
+  },
+  "keywords": ["tradingview", "opencode", "ai", "mcp", "trading", "c bot"],
+  "author": "jadatorin (bitorin)",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

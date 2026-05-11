@@ -1,3 +1,4 @@
+<img width="1024" height="1024" alt="Tradinview-opencode-Agent" src="https://github.com/user-attachments/assets/bdd1bf61-fc0d-4d8f-a9db-bde221877bc3" />
 # TradingView OpenCode Agent 🤖
 
 **Conecta tu TradingView Desktop con opencode.ai para análisis de charts con IA.**
@@ -155,7 +156,7 @@ TIMEOUT_MS=30000
 
 | Aspecto | Estado |
 |---------|--------|
-| ✅ Código 100% original |审计ado, sin dependencias externas |
+| ✅ Código 100% original |Auditado, sin dependencias externas |
 | ✅ Sin conexiones a servidores | Todo corre localmente |
 | ✅ Sin recopilación de datos | No hay telemetry ni tracking |
 | ✅ Chrome DevTools Protocol | Conexión local a tu app |

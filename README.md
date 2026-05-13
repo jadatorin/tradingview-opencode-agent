@@ -32,10 +32,10 @@ npm install
 # 3. Configurar opencode.ai
 # Agregar a tu ~/.config/opencode/mcp.json:
 {
-  "mcpServers": {
+  "mcp": {
     "tradingview": {
-      "command": "node",
-      "args": ["C:/Users/TU_USUARIO/path/to/tradingview-opencode-agent/src/index.js"]
+      "command": ["node", "C:/Users/TU_USUARIO/proyects/tradingview-opencode-agent/src/index.js"],
+      "type": "local"
     }
   }
 }

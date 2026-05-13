@@ -139,6 +139,19 @@ TIMEOUT_MS=30000
 
 ### Configuración de MCP
 
+#### OpenCode (formato correcto)
+```json
+{
+  "mcp": {
+    "tradingview": {
+      "command": ["node", "C:/Users/TU_USUARIO/proyects/tradingview-opencode-agent/src/index.js"],
+      "type": "local"
+    }
+  }
+}
+```
+
+#### Claude Desktop / Cursor
 ```json
 {
   "mcpServers": {

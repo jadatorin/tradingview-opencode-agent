@@ -156,3 +156,35 @@ if ($result.success) {
     Write-Host "CDP disponible en: $($result.url)"
 }
 ```
+
+---
+
+## MCP Server Scripts
+
+### start_mcp.ps1
+
+Inicia solo el servidor MCP (sin abrir TradingView).
+
+**Uso:**
+```powershell
+.\start_mcp.ps1
+```
+
+**Cuando usarlo:**
+- Ya tenés TradingView abierto con debug port
+- Solo necesitás el servidor MCP para OpenCode
+
+### start_all.ps1
+
+Inicia TradingView + MCP server + abre OpenCode automáticamente.
+
+**Uso:**
+```powershell
+.\start_all.ps1
+```
+
+**Cuando usarlo:**
+- Workflow completo desde cero
+- Un solo comando para tener todo funcionando
+
+**Nota:** Requiere que `opencode` esté en tu PATH. Si no lo está, modificá el script para usar la ruta completa.

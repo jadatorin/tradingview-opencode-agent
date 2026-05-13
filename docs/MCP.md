@@ -13,15 +13,34 @@ En este caso:
 
 ### Localización del Archivo de Configuración
 
-| OS | Ubicación |
-|----|------------|
-| Windows | `C:/Users/TU_USUARIO/.config/opencode/mcp.json` |
-| macOS | `~/.config/opencode/mcp.json` |
-| Linux | `~/.config/opencode/mcp.json` |
+| Cliente | OS | Ubicación |
+|---------|----|------------|
+| **OpenCode** | Windows | `C:/Users/TU_USUARIO/.config/opencode/opencode.json` |
+| **OpenCode** | macOS/Linux | `~/.config/opencode/opencode.json` |
+| Claude Desktop | Windows | `C:/Users/TU_USUARIO/.config/opencode/mcp.json` |
+| Claude Desktop | macOS/Linux | `~/.config/opencode/mcp.json` |
 
-### Configuración con Ruta Absoluta
+### OpenCode — Configuración (formato correcto)
 
-Para **configuración global** (funciona desde cualquier proyecto):
+El archivo es `opencode.json`, sección `mcp`:
+
+```json
+{
+  "mcp": {
+    "tradingview": {
+      "command": ["node", "C:/Users/TU_USUARIO/proyects/tradingview-opencode-agent/src/index.js"],
+      "type": "local"
+    }
+  }
+}
+```
+
+**Importante:**
+- `command` debe ser un **array** de strings
+- Agregar `"type": "local"` es obligatorio
+- La configuración va en la sección `mcp`, no en `mcpServers`
+
+### Claude Desktop / Cursor — Configuración
 
 ```json
 {
@@ -30,23 +49,6 @@ Para **configuración global** (funciona desde cualquier proyecto):
       "command": "node",
       "args": [
         "C:/Users/TU_USUARIO/proyects/tradingview-opencode-agent/src/index.js"
-      ]
-    }
-  }
-}
-```
-
-### Configuración con Ruta Relativa
-
-Para **configuración por proyecto** (crear `.opencode/mcp.json` en la raíz):
-
-```json
-{
-  "mcpServers": {
-    "tradingview": {
-      "command": "node",
-      "args": [
-        "./src/index.js"
       ]
     }
   }

@@ -1,4 +1,5 @@
-<img width="548" height="548" alt="Tradinview-opencode-Agent" src="https://github.com/user-attachments/assets/bdd1bf61-fc0d-4d8f-a9db-bde221877bc3" />
+<img width="512" height="512" alt="Tradinview-opencode-Agent" src="https://github.com/user-attachments/assets/bdd1bf61-fc0d-4d8f-a9db-bde221877bc3" />
+
 # TradingView OpenCode Agent 🤖
 
 **Conecta tu TradingView Desktop con opencode.ai para análisis de charts con IA.**

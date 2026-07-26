@@ -9,11 +9,19 @@
     "test": "node src/cli/index.js status",
     "lint": "node --check src/**/*.js"
   },
-  "keywords": ["tradingview", "opencode", "ai", "mcp", "trading", "c bot"],
+  "keywords": [
+    "tradingview",
+    "opencode",
+    "ai",
+    "mcp",
+    "trading",
+    "c bot"
+  ],
   "author": "jadatorin (bitorin)",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "chrome-remote-interface": "^0.34.0"
   },
   "engines": {
     "node": ">=18.0.0"

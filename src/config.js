@@ -18,8 +18,8 @@ export const CONFIG = {
   /** Remote debugging port (Chrome launched with --remote-debugging-port=9222) */
   CDP_PORT: 9222,
   
-  /** Target Chrome host */
-  CDP_HOST: 'localhost',
+  /** Target Chrome host — use 127.0.0.1 (not localhost) because Node.js on this machine can't resolve localhost to CDP */
+  CDP_HOST: '127.0.0.1',
   
   /** Where to save screenshots */
   SCREENSHOT_DIR: './screenshots',

@@ -166,7 +166,16 @@ export function formatAlert(alert) {
  * @returns {string}
  */
 export function sanitizeFilename(name) {
-  return name.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 100);
+  // Allow alphanumeric, underscore, hyphen, and dot (for extension)
+  // Strip anything else to avoid filesystem issues
+  const sanitized = name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+  // Ensure we keep at most 100 chars but preserve the extension
+  if (sanitized.length <= 100) return sanitized;
+  const dotIndex = sanitized.lastIndexOf('.');
+  if (dotIndex > 0 && sanitized.length - dotIndex <= 10) {
+    return sanitized.substring(0, 100 - (sanitized.length - dotIndex)) + sanitized.substring(dotIndex);
+  }
+  return sanitized.substring(0, 100);
 }
 
 export default {

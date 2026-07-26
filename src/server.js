@@ -9,7 +9,7 @@ import {
   ListToolsRequestSchema
 } from '@modelcontextprotocol/sdk/types.js';
 import { CONFIG } from './config.js';
-import { connectCDP, healthCheck as cdpHealthCheck, disconnectCDP } from './utils/cdp-client.js';
+import { connectCDP, healthCheck as cdpHealthCheck, disconnectCDP, getPageInfo, captureScreenshotTV } from './utils/cdp-client.js';
 import {
   formatOHLCVBar,
   formatPrice,
@@ -21,6 +21,14 @@ import {
   formatAlert,
   sanitizeFilename
 } from './utils/trading-helpers.js';
+import {
+  getChartState,
+  navigateToChart,
+  getOHLCVData,
+  getQuote,
+  getStudyValues,
+  drawHorizontalLine
+} from './utils/cdp-commands.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -416,20 +424,22 @@ async function handleLaunch(params) {
 
 async function handleChartGetState() {
   try {
-    const client = await connectCDP();
-    // Simulated chart state
-    const state = {
-      symbol: 'BINANCE:BTCUSDT',
-      timeframe: '60',
-      indicators: ['sma(20)', 'sma(50)', 'volume'],
-      viewport: { width: 1920, height: 1080 }
-    };
-    
+    // Try reading chart state from the current TV page URL
+    const state = await getChartState();
     return {
       content: [{ type: 'text', text: JSON.stringify(state, null, 2) }]
     };
   } catch (error) {
-    throw new Error(`Failed to get chart state: ${error.message}`);
+    // If not on a chart page, navigate to a default chart and retry
+    try {
+      await navigateToChart('BINANCE:BTCUSDT', '60');
+      const state = await getChartState();
+      return {
+        content: [{ type: 'text', text: JSON.stringify(state, null, 2) }]
+      };
+    } catch (navError) {
+      throw new Error(`Failed to get chart state: ${navError.message}`);
+    }
   }
 }
 
@@ -437,20 +447,7 @@ async function handleQuoteGet(params) {
   const symbol = resolveSymbol(params.symbol);
   
   try {
-    const client = await connectCDP();
-    // Simulated quote data
-    const quote = {
-      symbol,
-      bid: '67500.00',
-      ask: '67502.50',
-      last: '67501.25',
-      prev_close: '67200.00',
-      change: '+301.25',
-      change_pct: '+0.45%',
-      volume: '15234.5',
-      timestamp: Date.now()
-    };
-    
+    const quote = await getQuote(symbol);
     return {
       content: [{ type: 'text', text: JSON.stringify(quote, null, 2) }]
     };
@@ -463,48 +460,30 @@ async function handleGetOHLCV(params) {
   const symbol = resolveSymbol(params.symbol);
   const timeframe = resolveTimeframe(params.timeframe || '1h');
   const count = Math.min(params.count || 100, CONFIG.MAX_OHLCV_BARS);
-  const now = Date.now();
   
-  // Generate simulated OHLCV bars
-  const bars = [];
-  let price = 67000;
-  const intervalMs = {
-    '1': 60000, '5': 300000, '15': 900000, '30': 1800000,
-    '60': 3600000, '240': 14400000, '1D': 86400000
-  }[timeframe] || 3600000;
-  
-  for (let i = count - 1; i >= 0; i--) {
-    const variation = (Math.random() - 0.5) * 200;
-    const open = price;
-    const close = price + variation;
-    const high = Math.max(open, close) + Math.random() * 50;
-    const low = Math.min(open, close) - Math.random() * 50;
+  try {
+    const rawBars = await getOHLCVData(symbol, timeframe, count);
+    // Normalize bar format for consistency
+    const bars = rawBars.map(bar => formatOHLCVBar(bar));
     
-    bars.push(formatOHLCVBar({
-      time: now - (i * intervalMs),
-      open, high, low, close,
-      volume: Math.random() * 10000
-    }));
-    
-    price = close;
+    return {
+      content: [{ type: 'text', text: JSON.stringify({ symbol, timeframe, bars }, null, 2) }]
+    };
+  } catch (error) {
+    throw new Error(`Failed to get OHLCV data for ${symbol}: ${error.message}`);
   }
-  
-  return {
-    content: [{ type: 'text', text: JSON.stringify({ symbol, timeframe, bars }, null, 2) }]
-  };
 }
 
 async function handleGetStudyValues(params) {
-  // Simulated study values
-  const values = [
-    { name: 'SMA 20', value: 67250.00 },
-    { name: 'SMA 50', value: 66800.00 },
-    { name: 'RSI', value: 58.5 }
-  ];
-  
-  return {
-    content: [{ type: 'text', text: JSON.stringify(values.map(formatStudyValue), null, 2) }]
-  };
+  try {
+    // Try real widget API first, falls back to simulated data
+    const values = await getStudyValues(params.study_id);
+    return {
+      content: [{ type: 'text', text: JSON.stringify(values.map(formatStudyValue), null, 2) }]
+    };
+  } catch (error) {
+    throw new Error(`Failed to get study values: ${error.message}`);
+  }
 }
 
 async function handleGetPineLines(params) {
@@ -534,17 +513,47 @@ async function handleGetPineTables(params) {
 }
 
 async function handleDrawShape(params) {
-  const shapeId = `shape_${Date.now()}`;
+  // Support horizontal_line / line drawing via CDP evaluation on TV widget
+  if (params.type === 'line' || params.type === 'horizontal_line') {
+    try {
+      const price = params.points?.[0]?.price;
+      if (price === undefined || price === null) {
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({
+              id: `shape_${Date.now()}`,
+              status: 'needs_chart_widget',
+              type: params.type,
+              message: 'price is required in points[0].price for horizontal_line drawing.'
+            }, null, 2)
+          }]
+        };
+      }
+      const color = params.style?.color || '#2962FF';
+      const text = params.text || '';
+      const result = await drawHorizontalLine(price, color, text);
+      return {
+        content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+      };
+    } catch {
+      // CDP / widget not available — fall through to needs_chart_widget
+    }
+  }
   
+  // For all other shapes (or when CDP drawing fails), return needs_chart_widget
   return {
     content: [{
       type: 'text',
       text: JSON.stringify({
-        id: shapeId,
-        status: 'created',
+        id: `shape_${Date.now()}`,
+        status: 'needs_chart_widget',
         type: params.type,
         points: params.points,
-        style: params.style
+        style: params.style,
+        message: params.type === 'line' || params.type === 'horizontal_line'
+          ? 'Drawing via CDP requires the TradingView chart widget to be loaded. Navigate to a chart first.'
+          : `Drawing '${params.type}' shapes via CDP requires TradingView chart widget API. Only horizontal_line is currently supported.`
       }, null, 2)
     }]
   };
@@ -609,20 +618,26 @@ async function handleAlertDelete(params) {
 async function handleCaptureScreenshot(params) {
   const filename = params.filename || `screenshot_${Date.now()}.png`;
   const safeName = sanitizeFilename(filename);
-  
-  // In production, would capture via CDP Page.captureScreenshot
   const filepath = path.join(CONFIG.SCREENSHOT_DIR, safeName);
   
-  return {
-    content: [{
-      type: 'text',
-      text: JSON.stringify({
-        status: 'simulated',
-        filepath,
-        message: 'Screenshot capture would save to ' + filepath
-      }, null, 2)
-    }]
-  };
+  try {
+    const result = await captureScreenshotTV({ format: 'png' });
+    const buffer = Buffer.from(result.data, 'base64');
+    fs.writeFileSync(filepath, buffer);
+    
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({
+          status: 'captured',
+          filepath,
+          size: buffer.length
+        }, null, 2)
+      }]
+    };
+  } catch (error) {
+    throw new Error(`Failed to capture screenshot: ${error.message}`);
+  }
 }
 
 async function handleReplayStart(params) {
@@ -712,6 +727,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     };
   }
 });
+
+export { server };
 
 // === Main ===
 

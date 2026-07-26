@@ -3,7 +3,10 @@
     Launch TradingView from Windows Store (MSIX)
 .DESCRIPTION
     Specialized launcher for MSIX/Store version of TradingView.
-    MSIX apps may not accept --remote-debugging-port directly.
+    MSIX apps cannot accept --remote-debugging-port due to sandbox.
+    For CDP support, use launch_tv_cdp.ps1 (Chrome + web) instead.
+.PARAMETER Port
+    CDP port (default: 9222 - for reference only, will not work with MSIX)
 .EXAMPLE
     .\launch_tv_msix.ps1
 #>
@@ -15,21 +18,20 @@ param(
 $ErrorActionPreference = "Stop"
 
 function Get-MSIXTradingViewPath {
-    # Known MSIX installation paths
-    $msixPaths = @(
-        "C:\Program Files\WindowsApps\TradingView.Desktop_3.1.0.7818_x64__n534cwy3pjxzj\TradingView.exe",
-        "C:\Program Files\WindowsApps\TradingView.Desktop_*\TradingView.exe"
-    )
-
-    # Try direct path first
-    if (Test-Path "C:\Program Files\WindowsApps\TradingView.Desktop_3.1.0.7818_x64__n534cwy3pjxzj\TradingView.exe") {
-        return "C:\Program Files\WindowsApps\TradingView.Desktop_3.1.0.7818_x64__n534cwy3pjxzj\TradingView.exe"
+    $progFilesApps = "C:\Program Files\WindowsApps"
+    if (Test-Path $progFilesApps) {
+        $msixDirs = Get-ChildItem "$progFilesApps\TradingView.Desktop_*" -Directory -ErrorAction SilentlyContinue
+        foreach ($dir in $msixDirs) {
+            $exePath = Join-Path $dir.FullName "TradingView.exe"
+            if (Test-Path $exePath) {
+                return $exePath
+            }
+        }
     }
 
-    # Search for any TradingView MSIX installation
     $windowsApps = "$env:LOCALAPPDATA\Microsoft\WindowsApps"
     if (Test-Path $windowsApps) {
-        $msixApps = Get-ChildItem $windowsApps -Filter "TradingView*" -ErrorAction SilentlyContinue
+        $msixApps = Get-ChildItem $windowsApps -Filter "TradingView*" -Directory -ErrorAction SilentlyContinue
         if ($msixApps) {
             $tvExe = Join-Path $msixApps[0].FullName "TradingView.exe"
             if (Test-Path $tvExe) {
@@ -43,17 +45,14 @@ function Get-MSIXTradingViewPath {
 
 function Test-CDPConnection {
     param([int]$TestPort)
-
     try {
         $response = Invoke-RestMethod "http://localhost:$TestPort/json" -TimeoutSec 3 -ErrorAction SilentlyContinue
         return $response -ne $null
     }
-    catch {
-        return $false
-    }
+    catch { return $false }
 }
 
-# Main execution
+# Main
 Write-Host "Searching for TradingView MSIX..." -ForegroundColor Cyan
 
 $tvPath = Get-MSIXTradingViewPath
@@ -64,61 +63,36 @@ if (-not $tvPath) {
 }
 
 Write-Host "Found: $tvPath" -ForegroundColor Green
+Write-Host ""
+Write-Host "WARNING - MSIX SECURITY RESTRICTION:" -ForegroundColor Yellow
+Write-Host "  Windows Store apps cannot accept --remote-debugging-port" -ForegroundColor Yellow
+Write-Host "  The MCP server (CDP) will NOT be able to connect." -ForegroundColor Yellow
+Write-Host "  For CDP + MCP use: launch_tv_cdp.ps1 (Chrome + web)" -ForegroundColor Cyan
+Write-Host ""
 
-# Check if already running with CDP
 if (Test-CDPConnection -TestPort $Port) {
-    Write-Host "TradingView already running with CDP on port $Port" -ForegroundColor Green
-    $result = @{
-        success = $true
-        url = "http://localhost:$Port/json"
-        port = $Port
-        path = $tvPath
-        type = "msix"
-    }
+    Write-Host "CDP already active on port $Port" -ForegroundColor Green
+    $result = @{ success = $true; url = "http://localhost:$Port/json"; port = $Port; path = $tvPath; type = "msix" }
     Write-Output ($result | ConvertTo-Json -Compress)
     exit 0
 }
 
-# MSIX workaround: Try to launch with Shell to pass arguments
-# Note: MSIX apps often ignore command line arguments for security
-Write-Host "Attempting to launch MSIX with CDP..." -ForegroundColor Yellow
+Write-Host "Launching TradingView Desktop (MSIX)..." -ForegroundColor Cyan
+Write-Host "  (no CDP - MSIX sandbox restriction)" -ForegroundColor Gray
 
 try {
-    # Try using Start-Process with arguments (may not work for MSIX)
-    $args = "--remote-debugging-port=$Port"
-    $process = Start-Process -FilePath $tvPath -ArgumentList $args -PassThru
-
-    Start-Sleep -Seconds 3
-
-    if (Test-CDPConnection -TestPort $Port) {
-        Write-Host "CDP active!" -ForegroundColor Green
-        $result = @{
-            success = $true
-            url = "http://localhost:$Port/json"
-            port = $Port
-            path = $tvPath
-            type = "msix"
-        }
-        Write-Output ($result | ConvertTo-Json -Compress)
-        exit 0
-    }
-
-    # Fallback: launch without args (standard MSIX behavior)
-    Write-Host "MSIX doesn't accept remote debugging args. Launching normally..." -ForegroundColor Yellow
-
-    if ($process -and -not $process.HasExited) {
-        # Already running, just report
-    }
-    else {
-        $process = Start-Process -FilePath $tvPath -PassThru
-    }
+    $process = Start-Process -FilePath $tvPath -PassThru
+    Write-Host "  Process started: PID $($process.Id)" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "OK - TradingView Desktop is running." -ForegroundColor Green
+    Write-Host "Note: CDP/MCP tools will NOT connect to this instance." -ForegroundColor Yellow
+    Write-Host "Keep Chrome+CDP (launch_tv_cdp.ps1) for MCP tools." -ForegroundColor Cyan
 
     $result = @{
         success = $true
-        message = "MSIX launched but CDP may not be available (MSIX security restriction)"
-        port = $Port
-        path = $tvPath
         type = "msix"
+        path = $tvPath
+        message = "MSIX launched without CDP (MSIX sandbox restriction)"
     }
     Write-Output ($result | ConvertTo-Json -Compress)
 }

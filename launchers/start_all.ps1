@@ -15,12 +15,13 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Write-Host "=== TradingView + OpenCode Setup ===" -ForegroundColor Cyan
 Write-Host ""
 
-# Step 1: Launch TradingView
-Write-Host "[1/2] Launching TradingView Desktop..." -ForegroundColor Yellow
+# Step 1: Launch Chrome + TradingView via CDP launcher (persistent profile)
+Write-Host "[1/2] Launching Chrome with CDP for TradingView..." -ForegroundColor Yellow
 try {
-    $tvResult = & "$scriptDir\launch_tv.ps1" -NoWait | ConvertFrom-Json
+    $tvResult = & "$scriptDir\launch_tv_cdp.ps1" -NoWait | ConvertFrom-Json
     if ($tvResult.success) {
         Write-Host "      TradingView started on port $($tvResult.port)" -ForegroundColor Green
+        Write-Host "      Profile: $($tvResult.profile_dir)" -ForegroundColor Gray
     } else {
         Write-Host "      Warning: CDP not ready, will retry..." -ForegroundColor Yellow
     }

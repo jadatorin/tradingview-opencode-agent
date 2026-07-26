@@ -18,6 +18,16 @@ param(
     [switch]$NoWait
 )
 
+<#
+.NOTES
+    ⚠️ CDP NOTE: MSIX-packaged TradingView Desktop CANNOT accept --remote-debugging-port
+    due to MSIX sandbox restrictions. For CDP connectivity (required by the MCP server),
+    use the companion script: .\launch_tv_cdp.ps1
+    
+    That script launches Chrome with --remote-debugging-port and opens TradingView.com,
+    which gives the MCP server full CDP access. See launch_tv_cdp.ps1 for details.
+#>
+
 $ErrorActionPreference = "Stop"
 
 function Get-TradingViewPath {

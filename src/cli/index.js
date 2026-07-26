@@ -13,6 +13,8 @@ import { createRequire } from 'module';
 import statusCommand from './commands/status.js';
 import quoteCommand from './commands/quote.js';
 import ohlcvCommand from './commands/ohlcv.js';
+import screenshotCommand from './commands/screenshot.js';
+import symbolCommand from './commands/symbol.js';
 import { formatError } from './lib/formatters.js';
 
 const require = createRequire(import.meta.url);
@@ -32,6 +34,8 @@ program
 program.addCommand(statusCommand);
 program.addCommand(quoteCommand);
 program.addCommand(ohlcvCommand);
+program.addCommand(screenshotCommand);
+program.addCommand(symbolCommand);
 
 // ─── Error handling ─────────────────────────────────────────────────
 

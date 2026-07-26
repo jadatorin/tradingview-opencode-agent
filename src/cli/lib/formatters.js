@@ -84,7 +84,8 @@ export function formatOHLCV(bars, opts) {
 
 /**
  * Format CDP/tab status for display
- * @param {object} state - Status state { connected, tabUrl? }
+ * @param {object} state - Status object with:
+ *   { connected, tabUrl?, symbol?, timeframe?, indicators?, message? }
  * @param {object} [opts] - Formatting options
  * @returns {string} Formatted output
  */
@@ -92,13 +93,31 @@ export function formatStatus(state, opts) {
   if (opts?.json || isPipe()) {
     return formatJSON(state);
   }
-  if (state.connected && state.tabUrl) {
-    return `connected: ${state.tabUrl}`;
+
+  if (!state.connected) {
+    return state.message || 'TradingView not connected. Use: npm run launch:tv';
   }
-  if (state.connected) {
-    return 'connected (no TV tab found)';
+
+  if (!state.tabUrl) {
+    return state.message || 'CDP connected (no TradingView tab found)';
   }
-  return 'CDP: disconnected';
+
+  const lines = [
+    'Status:     Connected',
+    `Tab URL:    ${state.tabUrl}`
+  ];
+
+  if (state.symbol) {
+    lines.push(`Symbol:     ${state.symbol}`);
+  }
+  if (state.timeframe) {
+    lines.push(`Timeframe:  ${state.timeframe}`);
+  }
+  if (state.indicators && state.indicators.length > 0) {
+    lines.push(`Indicators: ${state.indicators.join(', ')}`);
+  }
+
+  return lines.join('\n');
 }
 
 /**

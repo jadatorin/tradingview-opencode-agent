@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "TradingView Desktop AI Agent for opencode.ai. MCP server + skills + launchers.",
   "main": "src/index.js",
+  "bin": {
+    "tv": "./src/cli/index.js"
+  },
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
+    "cli": "node src/cli/index.js",
     "test": "node src/cli/index.js status",
     "lint": "node --check src/**/*.js"
   },
@@ -21,7 +25,8 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
-    "chrome-remote-interface": "^0.34.0"
+    "chrome-remote-interface": "^0.34.0",
+    "commander": "^13.1.0"
   },
   "engines": {
     "node": ">=18.0.0"

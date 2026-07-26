@@ -40,6 +40,8 @@ ohlcvCommand
   .option('--count <number>', 'Number of bars to return (max ' + MAX_BARS + ')', Number, 100)
   .action(async (symbol, options, command) => {
     try {
+      const normalizedSymbol = symbol.trim();
+
       // Validate and cap count
       const rawCount = Number.isNaN(options.count) ? 100 : options.count;
       const count = Math.min(rawCount, MAX_BARS);
@@ -51,7 +53,12 @@ ohlcvCommand
       const tvTimeframe = toTVTimeframe(options.timeframe);
 
       const globalOpts = command.optsWithGlobals();
-      const bars = await getOHLCVData(symbol, tvTimeframe, count);
+      const bars = await getOHLCVData(normalizedSymbol, tvTimeframe, count);
+
+      if (!bars || bars.length === 0) {
+        process.stderr.write('[INFO] No data returned for this symbol/timeframe combination\n');
+      }
+
       process.stdout.write(formatOHLCV(bars, { json: globalOpts.json }) + '\n');
     } catch (err) {
       process.stderr.write(`[ERROR] ${err.message}\n`);

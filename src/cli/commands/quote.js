@@ -19,7 +19,7 @@ quoteCommand
   .action(async (symbol, _options, command) => {
     try {
       const globalOpts = command.optsWithGlobals();
-      const data = await getQuote(symbol);
+      const data = await getQuote(symbol.trim());
       process.stdout.write(formatQuote(data, { json: globalOpts.json }) + '\n');
     } catch (err) {
       process.stderr.write(`[ERROR] ${err.message}\n`);

@@ -1,0 +1,27 @@
+# SDD DAG State — tv-cli
+# Generated: 2026-07-25
+# Mode: hybrid
+
+phases:
+  exploration: completed
+  proposal: completed
+  spec: completed
+  design: completed
+  tasks: completed
+  apply: pending
+  verify: pending
+  archive: pending
+
+artifacts:
+  proposal:
+    engram: sdd/tv-cli/proposal
+    openspec: openspec/changes/tv-cli/proposal.md
+  spec:
+    engram: sdd/tv-cli/spec
+    openspec: openspec/changes/tv-cli/spec.md
+  design:
+    engram: sdd/tv-cli/design
+    openspec: openspec/changes/tv-cli/design.md
+  tasks:
+    engram: sdd/tv-cli/tasks
+    openspec: openspec/changes/tv-cli/tasks.md

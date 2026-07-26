@@ -40,8 +40,12 @@ npm install
   }
 }
 
-# 4. Iniciar TradingView con debug port
-.\launchers\launch_tv.ps1
+# 4. Iniciar TradingView con CDP (Chrome + sesión persistente)
+.\launchers\launch_tv_cdp.ps1
+
+   # Alternativa: si tenés la versión Desktop (MSIX/Store):
+   .\launchers\launch_tv_msix.ps1
+   # ⚠️ MSIX no soporta CDP — las tools MCP no conectarán
 
 # 5. Verificar conexión
 npm run test
@@ -111,10 +115,13 @@ tradingview-opencode-agent/
 │   └── docs/                     # Docs de referencia
 │
 ├── launchers/                    # Scripts de lanzamiento
-│   ├── launch_tv.ps1             # Windows universal
+│   ├── launch_tv_cdp.ps1         # [RECOMENDADO] Chrome + CDP + sesión persistente
+│   ├── launch_tv.ps1             # Windows universal (detecta cualquier versión)
 │   ├── launch_tv.sh              # Linux/macOS
 │   ├── launch_tv_desktop.ps1     # Desktop installer
-│   └── launch_tv_msix.ps1         # Microsoft Store
+│   ├── launch_tv_msix.ps1        # Microsoft Store (sin CDP)
+│   ├── start_all.ps1             # Lanza CDP + MCP server en un solo comando
+│   └── start_mcp.ps1             # Solo MCP server (cuando TV ya está abierto)
 │
 ├── docs/                         # Documentación principal
 └── package.json                  # Dependencias Node.js

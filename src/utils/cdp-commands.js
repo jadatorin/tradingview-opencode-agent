@@ -46,7 +46,7 @@ const TV_TO_BINANCE_TIMEFRAME = {
  */
 function tvSymbolToBinance(symbol) {
   const parts = symbol.split(':');
-  return parts[parts.length - 1].toUpperCase();
+  return parts[parts.length - 1].trim().toUpperCase();
 }
 
 /**
@@ -64,8 +64,29 @@ function tvTimeframeToBinance(tf) {
  * @param {string} url - Binance API URL
  * @returns {Promise<any>} Parsed JSON response
  */
+/**
+ * Default timeout for Binance API requests (10 seconds).
+ * Binance REST API is generally fast; anything over 10s is likely a network issue.
+ * @type {number}
+ */
+const BINANCE_TIMEOUT_MS = 10000;
+
 async function binanceFetch(url) {
-  const response = await fetch(url);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), BINANCE_TIMEOUT_MS);
+
+  let response;
+  try {
+    response = await fetch(url, { signal: controller.signal });
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      throw new Error(`Binance API request timed out after ${BINANCE_TIMEOUT_MS}ms`);
+    }
+    throw new Error(`Network error reaching Binance API: ${err.message}`);
+  }
+  clearTimeout(timeoutId);
+
   if (!response.ok) {
     let detail = '';
     try {

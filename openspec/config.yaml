@@ -1,0 +1,52 @@
+# SDD Configuration — tradingview-opencode-agent
+# Generated: 2026-07-25
+# Mode: hybrid (openspec + engram)
+
+context: |
+  TradingView OpenCode Agent — MCP server that automates TradingView Desktop
+  via Chrome DevTools Protocol. Node.js ESM project with PowerShell launchers
+  and a skills-based orchestrator for AI workflows. Currently has NO test
+  framework — npm test runs a status check, npm run lint does syntax-only
+  validation (node --check). Strict TDD is disabled.
+
+strict_tdd: false
+
+testing:
+  runner: none
+  framework: null
+  unit: false
+  integration: false
+  e2e: false
+  coverage: false
+  linter: syntax-check
+  type_checker: false
+  formatter: false
+  notes: >
+    npm test runs `node src/cli/index.js status` (operational check, not a test
+    framework). npm run lint does `node --check src/**/*.js` (syntax validation
+    only). No test framework is installed — jest/mocha/vitest are absent from
+    dependencies. CI runs npm test + npm run lint on ubuntu-latest + Node 20.
+
+phases:
+  proposal:
+    requires_validation: false
+  spec:
+    requires_validation: false
+  design:
+    requires_validation: false
+  tasks:
+    requires_validation: false
+  apply:
+    strict_tdd: false
+    approve_without_tests: true
+  verify:
+    requires_approval: false
+  archive:
+    requires_approval: false
+
+references:
+  - docs/ARCHITECTURE.md
+  - docs/INSTALL.md
+  - docs/MCP.md
+  - src/config.js
+  - .github/workflows/ci.yml

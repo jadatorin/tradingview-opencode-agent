@@ -16,6 +16,7 @@ import ohlcvCommand from './commands/ohlcv.js';
 import screenshotCommand from './commands/screenshot.js';
 import symbolCommand from './commands/symbol.js';
 import streamCommand from './commands/stream.js';
+import batchCommand from './commands/batch.js';
 import { formatError } from './lib/formatters.js';
 
 const require = createRequire(import.meta.url);
@@ -38,6 +39,7 @@ program.addCommand(ohlcvCommand);
 program.addCommand(screenshotCommand);
 program.addCommand(symbolCommand);
 program.addCommand(streamCommand);
+program.addCommand(batchCommand);
 
 // ─── Error handling ─────────────────────────────────────────────────
 

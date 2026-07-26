@@ -11,6 +11,8 @@
 import { Command } from 'commander';
 import { createRequire } from 'module';
 import statusCommand from './commands/status.js';
+import quoteCommand from './commands/quote.js';
+import ohlcvCommand from './commands/ohlcv.js';
 import { formatError } from './lib/formatters.js';
 
 const require = createRequire(import.meta.url);
@@ -28,6 +30,8 @@ program
 // ─── Register commands ──────────────────────────────────────────────
 // Commands will be added as they are implemented in subsequent batches.
 program.addCommand(statusCommand);
+program.addCommand(quoteCommand);
+program.addCommand(ohlcvCommand);
 
 // ─── Error handling ─────────────────────────────────────────────────
 
